@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3D Love Circle</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        background: black;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        touch-action: none;
+        perspective: 1000px;
+    }
+
+    #scene {
+        width: 420px;
+        height: 420px;
+        position: relative;
+        transform-style: preserve-3d;
+    }
+
+    #circle {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        transform-style: preserve-3d;
+        animation: autoSpin 20s linear infinite;
+    }
+
+    .word {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        color: #40E0D0;
+        font-size: 1.3rem;
+        letter-spacing: 2px;
+        white-space: nowrap;
+        text-shadow: 0 0 12px #fff;
+        transform-origin: 0 0;
+    }
+
+    @keyframes autoSpin {
+        from {
+            transform: rotateY(0deg) rotateX(10deg);
+        }
+        to {
+            transform: rotateY(360deg) rotateX(10deg);
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div id="scene">
+    <div id="circle"></div>
+</div>
+
+<script>
+    const circle = document.getElementById("circle");
+    const text = "Almoo";
+    const count = 80;
+    const radius = 240;
+
+    // إنشاء دائرة ثلاثية الأبعاد
+    for (let i = 0; i < count; i++) {
+        const angle = (360 / count) * i;
+        const depth = Math.sin(i) * 40;
+
+        const span = document.createElement("span");
+        span.className = "word";
+        span.innerText = text;
+
+        span.style.transform = `
+            rotateY(${angle}deg)
+            translateZ(${radius}px)
+            translateY(${depth}px)
+            rotateY(${-angle}deg)
+        `;
+
+        circle.appendChild(span);
+    }
+
+    // ====== التفاعل والاهتزاز ======
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let rotY = 0;
+    let rotX = 10;
+
+    function vibrate(ms = 30) {
+        if (navigator.vibrate) {
+            navigator.vibrate(ms);
+        }
+    }
+
+    function start(x, y) {
+        dragging = true;
+        lastX = x;
+        lastY = y;
+        circle.style.animationPlayState = "paused";
+        vibrate(20);
+    }
+
+    function move(x, y) {
+        if (!dragging) return;
+
+        const dx = x - lastX;
+        const dy = y - lastY;
+
+        rotY += dx * 0.5;
+        rotX -= dy * 0.3;
+
+        circle.style.transform =
+            `rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+
+        lastX = x;
+        lastY = y;
+
+        vibrate(10);
+    }
+
+    function end() {
+        dragging = false;
+        circle.style.animationPlayState = "running";
+        vibrate(40);
+    }
+
+    // Mouse
+    window.addEventListener("mousedown", e => start(e.clientX, e.clientY));
+    window.addEventListener("mousemove", e => move(e.clientX, e.clientY));
+    window.addEventListener("mouseup", end);
+
+    // Touch
+    window.addEventListener("touchstart", e =>
+        start(e.touches[0].clientX, e.touches[0].clientY)
+    );
+    window.addEventListener("touchmove", e =>
+        move(e.touches[0].clientX, e.touches[0].clientY)
+    );
+    window.addEventListener("touchend", end);
+</script>
+
+</body>
+</html>
