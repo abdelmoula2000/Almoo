@@ -1,0 +1,15 @@
+{
+  "channel_name": "Fix It Fast",
+  "model": "llama3.2:3b",
+  "ollama_host": "http://localhost:11434",
+  "voice": "af_heart",
+  "voice_speed": 1.0,
+  "whisper_model": "small",
+  "fps": 30,
+  "encoder": "libx264",
+  "preset": "veryfast",
+  "crf": 20,
+  "music": "",
+  "music_volume": 0.08,
+  "projects_dir": "projects"
+}

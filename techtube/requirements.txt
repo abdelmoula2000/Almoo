@@ -1,0 +1,12 @@
+# Core (required)
+requests>=2.31
+numpy>=1.26
+pillow>=10.1
+
+# Voice: Kokoro text-to-speech (local, free). Pulls in PyTorch (~1-2 GB).
+kokoro>=0.9
+soundfile>=0.12
+
+# Captions with exact word timing (GPU if available, otherwise CPU).
+# Without it, captions still work using an estimate.
+faster-whisper>=1.0
