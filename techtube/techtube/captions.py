@@ -51,15 +51,23 @@ def estimate_words(text: str, duration: float, lead: float = 0.05, tail: float =
 _whisper_model = None
 
 
-def whisper_words(wav: Path, model_size: str = "small") -> list[Word]:
-    """Word-level timestamps with faster-whisper (GPU if available, else CPU int8)."""
+def whisper_words(wav: Path, model_size: str = "small", device: str = "cpu") -> list[Word]:
+    """Word-level timestamps with faster-whisper.
+
+    device="cpu" (default) works everywhere. device="cuda" needs NVIDIA's cuBLAS/cuDNN
+    libraries installed (often missing on Windows), so it is opt-in via config.json.
+    """
     global _whisper_model
     from faster_whisper import WhisperModel  # imported lazily: optional dependency
 
     if _whisper_model is None:
-        try:
-            _whisper_model = WhisperModel(model_size, device="cuda", compute_type="int8_float16")
-        except Exception:
+        if device == "cuda":
+            try:
+                _whisper_model = WhisperModel(model_size, device="cuda",
+                                              compute_type="int8_float16")
+            except Exception:
+                _whisper_model = None
+        if _whisper_model is None:
             _whisper_model = WhisperModel(model_size, device="cpu", compute_type="int8")
     segments, _ = _whisper_model.transcribe(str(wav), language="en", word_timestamps=True,
                                             vad_filter=False)
@@ -81,12 +89,13 @@ def whisper_available() -> bool:
 
 
 def section_words(wav: Path, narration: str, duration: float, mode: str = "auto",
-                  model_size: str = "small", cache: Path | None = None) -> list[Word]:
+                  model_size: str = "small", cache: Path | None = None,
+                  device: str = "cpu") -> list[Word]:
     """Words for one section. mode: auto | whisper | estimate."""
     if cache and cache.exists() and cache.stat().st_mtime >= wav.stat().st_mtime:
         return [Word(**w) for w in json.loads(cache.read_text(encoding="utf-8"))]
     use_whisper = mode == "whisper" or (mode == "auto" and whisper_available())
-    words = whisper_words(wav, model_size) if use_whisper else []
+    words = whisper_words(wav, model_size, device) if use_whisper else []
     if not words:
         words = estimate_words(narration, duration)
     if cache:

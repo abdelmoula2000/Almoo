@@ -112,7 +112,8 @@ def build_video(project: Project, script: Script, theme: Theme, cfg: dict, *,
             wav = section_audio(project, seg.index)
             ws = cap.section_words(wav, sec.narration, seg.voice,
                                    captions_mode, cfg.get("whisper_model", "small"),
-                                   cache=bdir / f"words_{seg.index:02d}.json")
+                                   cache=bdir / f"words_{seg.index:02d}.json",
+                                   device=cfg.get("whisper_device", "cpu"))
             words += cap.shift(ws, seg.start)
         font_dir = bdir / "fonts"
         font_dir.mkdir(exist_ok=True)

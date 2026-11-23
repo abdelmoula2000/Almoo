@@ -22,6 +22,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "voice": "af_heart",
     "voice_speed": 1.0,
     "whisper_model": "small",
+    "whisper_device": "cpu",
     "fps": 30,
     "music": "",
     "music_volume": 0.08,

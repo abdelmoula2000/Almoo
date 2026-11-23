@@ -15,33 +15,114 @@
 
 ---
 
-## 1) التثبيت (Windows)
+## 1) التثبيت على Windows خطوة بخطوة
 
-1. **Python 3.11**: من [python.org](https://www.python.org/downloads/release/python-3119/). عند التثبيت فعّل خيار **Add Python to PATH**.
-   - استخدم 3.11 أو 3.12، لأن Kokoro يعتمد على PyTorch الذي قد لا يدعم أحدث إصدارات Python.
-2. **ffmpeg**: افتح PowerShell واكتب:
+تحتاج: Windows 10 أو 11، وحوالي **15GB** مساحة فارغة، واتصال إنترنت للتحميل مرة واحدة فقط.
+المدة: حوالي ساعة، وأغلبها انتظار التحميل.
+
+### الخطوة 1: تحميل الأداة
+1. حمّل الملف المضغوط:
+   https://github.com/abdelmoula2000/Almoo/archive/refs/heads/ccr-b96dd09f-vct00g.zip
+   إذا كان المستودع خاصاً، سجّل دخولك إلى GitHub في المتصفح أولاً.
+2. فك الضغط في مكان بسيط، مثلاً `C:\TechTube`.
+3. المجلد المهم هو `techtube` داخل المجلد الذي فككته.
+
+### الخطوة 2: Python 3.11
+1. ادخل إلى https://www.python.org/downloads/release/python-3119/ وحمّل **Windows installer (64-bit)**.
+2. شغّل المثبّت، و**فعّل مربع «Add python.exe to PATH»** أسفل النافذة، ثم اضغط **Install Now**.
+3. افتح PowerShell (ابحث عنه في قائمة ابدأ) واكتب:
+   ```powershell
+   python --version
+   ```
+   يجب أن يظهر `Python 3.11.9`.
+
+لماذا 3.11؟ لأن Kokoro (الصوت) لا يعمل على أحدث إصدارات Python.
+
+> **مشكلة شائعة:** إذا فتح الأمر متجر Microsoft بدل ظهور الرقم: افتح **الإعدادات ← التطبيقات ← إعدادات التطبيقات المتقدمة ← أسماء الأوامر المستعارة للتطبيقات (App execution aliases)**، وأطفئ `python.exe` و`python3.exe`، ثم أعد فتح PowerShell.
+
+### الخطوة 3: ffmpeg (صناعة الفيديو)
+1. في PowerShell:
    ```powershell
    winget install Gyan.FFmpeg
    ```
-   ثم أغلق PowerShell وافتحه من جديد، وتأكد بالأمر `ffmpeg -version`.
-3. **Ollama**: حمّله من [ollama.com](https://ollama.com/download) وثبّته، ثم نزّل النموذج:
+   وافق على أي سؤال بكتابة `Y`.
+2. **أغلق PowerShell وافتحه من جديد** (ضروري)، ثم تأكد:
+   ```powershell
+   ffmpeg -version
+   ```
+
+### الخطوة 4: Ollama (الذكاء الاصطناعي الذي يكتب السكريبت)
+1. حمّل `OllamaSetup.exe` من https://ollama.com/download وثبّته. بعد التثبيت يعمل في الخلفية، وتظهر أيقونته بجانب الساعة.
+2. نزّل النموذج (حوالي 2GB):
    ```powershell
    ollama pull llama3.2:3b
    ```
-   مناسب لكرت شاشة 4GB. بديل جيد: `qwen2.5:3b`. وإذا أردت جودة أعلى (أبطأ): `qwen2.5:7b`.
-4. **eSpeak NG** (يحتاجه Kokoro لنطق بعض الكلمات): المثبّت من
-   [صفحة الإصدارات](https://github.com/espeak-ng/espeak-ng/releases) (ملف `.msi`).
-5. **مكتبات Python**: داخل مجلد `techtube`:
+3. جرّبه:
+   ```powershell
+   ollama run llama3.2:3b "Say hello in one sentence"
+   ```
+   إذا ردّ عليك بجملة، فهو يعمل. Ollama يستخدم كرت الشاشة تلقائياً.
+
+### الخطوة 5: eSpeak NG (يساعد الصوت في نطق الكلمات الصعبة)
+1. ادخل إلى https://github.com/espeak-ng/espeak-ng/releases
+2. حمّل ملف `.msi` الخاص بـ X64 من آخر إصدار، وثبّته بالإعدادات الافتراضية.
+
+### الخطوة 6: مكتبات الأداة
+1. افتح مجلد `techtube` في مستكشف الملفات، واضغط على شريط العنوان في الأعلى، واكتب `powershell` ثم Enter. ستفتح نافذة PowerShell داخل المجلد.
+2. أنشئ بيئة خاصة بالأداة وفعّلها:
    ```powershell
    python -m venv .venv
    .venv\Scripts\activate
-   pip install -r requirements.txt
    ```
-   - لتسريع الترجمة باستعمال كرت الشاشة NVIDIA، ثبّت بعدها PyTorch بنسخة CUDA من
-     [pytorch.org](https://pytorch.org/get-started/locally/). وبدونها تعمل الأداة على المعالج، لكنها أبطأ.
-6. **الإعدادات**: انسخ `config.example.json` باسم `config.json`، وغيّر اسم قناتك في `channel_name`.
+   يجب أن يظهر `(.venv)` في بداية السطر.
+   > إذا ظهر خطأ **running scripts is disabled**، نفّذ هذا الأمر مرة واحدة، واكتب `Y`، ثم أعد أمر التفعيل:
+   > ```powershell
+   > Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+   > ```
+3. ثبّت المكتبات (حوالي 2 إلى 3GB، وقد تأخذ من 10 إلى 30 دقيقة):
+   ```powershell
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   python -m spacy download en_core_web_sm
+   ```
 
-> على Mac أو Linux نفس الخطوات: ffmpeg عبر `brew install ffmpeg` أو `sudo apt install ffmpeg`، وeSpeak عبر `brew install espeak-ng` أو `sudo apt install espeak-ng`.
+### الخطوة 7: الإعدادات
+1. انسخ الملف `config.example.json` وسمِّ النسخة `config.json`.
+2. افتحه بالمفكرة (Notepad)، وغيّر `"Fix It Fast"` إلى اسم قناتك، ثم احفظ.
+
+### الخطوة 8: التجربة الأولى
+في نفس نافذة PowerShell (وفيها `(.venv)`):
+```powershell
+python tt.py script --from-file examples/laptop-overheating.md
+python tt.py all laptop-overheating
+```
+- **في أول مرة:** سيحمّل نموذج الصوت ونموذج الترجمة (بضع مئات من الميغابايت)، ثم يصنع الفيديو.
+- **النتيجة:** في `projects\laptop-overheating\`:
+  - `final.mp4`
+  - `shorts\`
+  - `youtube.txt`
+  - `check.md`
+
+ثم جرّب سكريبتاً يكتبه Ollama:
+```powershell
+python tt.py script "wifi keeps disconnecting" --context "Windows 11"
+```
+
+### كل مرة تفتح فيها الجهاز
+افتح PowerShell داخل مجلد `techtube` (كما في الخطوة 6)، ثم:
+```powershell
+.venv\Scripts\activate
+```
+وبعدها استخدم الأوامر. Ollama يعمل وحده في الخلفية.
+
+### اختياري: تسريع الريندر بكرت NVIDIA
+في `config.json` غيّر `"encoder": "libx264"` إلى `"encoder": "h264_nvenc"`.
+إذا ظهر خطأ عند الريندر، أرجعها كما كانت. الترجمة (Whisper) تعمل على المعالج افتراضياً لأنها تحتاج مكتبات NVIDIA إضافية على Windows.
+
+> على Mac أو Linux نفس الفكرة:
+> - ffmpeg: `brew install ffmpeg` أو `sudo apt install ffmpeg`
+> - eSpeak NG: `brew install espeak-ng` أو `sudo apt install espeak-ng`
+> - تفعيل البيئة: `source .venv/bin/activate`
 
 ---
 

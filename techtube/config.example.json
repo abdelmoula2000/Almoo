@@ -5,6 +5,7 @@
   "voice": "af_heart",
   "voice_speed": 1.0,
   "whisper_model": "small",
+  "whisper_device": "cpu",
   "fps": 30,
   "encoder": "libx264",
   "preset": "veryfast",
