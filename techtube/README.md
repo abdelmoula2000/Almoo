@@ -29,14 +29,16 @@
 
 ### الخطوة 2: Python 3.11
 1. ادخل إلى https://www.python.org/downloads/release/python-3119/ وحمّل **Windows installer (64-bit)**.
-2. شغّل المثبّت، و**فعّل مربع «Add python.exe to PATH»** أسفل النافذة، ثم اضغط **Install Now**.
+2. شغّل المثبّت واضغط **Install Now**.
+   - إذا كان عندك إصدار أحدث مثبت (3.12 أو 3.13 أو 3.14)، **لا تحذفه**. الإصداران يعيشان معاً بدون مشاكل.
+   - مربع «Add python.exe to PATH» غير ضروري هنا، لأننا سنستخدم الأمر `py`.
 3. افتح PowerShell (ابحث عنه في قائمة ابدأ) واكتب:
    ```powershell
-   python --version
+   py -3.11 --version
    ```
    يجب أن يظهر `Python 3.11.9`.
 
-لماذا 3.11؟ لأن Kokoro (الصوت) لا يعمل على أحدث إصدارات Python.
+لماذا 3.11 بالذات؟ لأن Kokoro (الصوت) يعمل فقط مع Python من 3.10 إلى 3.12. الأمر `py -3.11` يختار هذا الإصدار، حتى لو كان الإصدار الافتراضي عندك أحدث.
 
 > **مشكلة شائعة:** إذا فتح الأمر متجر Microsoft بدل ظهور الرقم: افتح **الإعدادات ← التطبيقات ← إعدادات التطبيقات المتقدمة ← أسماء الأوامر المستعارة للتطبيقات (App execution aliases)**، وأطفئ `python.exe` و`python3.exe`، ثم أعد فتح PowerShell.
 
@@ -71,10 +73,11 @@
 1. افتح مجلد `techtube` في مستكشف الملفات، واضغط على شريط العنوان في الأعلى، واكتب `powershell` ثم Enter. ستفتح نافذة PowerShell داخل المجلد.
 2. أنشئ بيئة خاصة بالأداة وفعّلها:
    ```powershell
-   python -m venv .venv
+   py -3.11 -m venv .venv
    .venv\Scripts\activate
+   python --version
    ```
-   يجب أن يظهر `(.venv)` في بداية السطر.
+   يجب أن يظهر `(.venv)` في بداية السطر، و`Python 3.11.9`. داخل هذه البيئة، الأمر `python` يعني دائماً 3.11.
    > إذا ظهر خطأ **running scripts is disabled**، نفّذ هذا الأمر مرة واحدة، واكتب `Y`، ثم أعد أمر التفعيل:
    > ```powershell
    > Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
